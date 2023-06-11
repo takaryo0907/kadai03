@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase_version9_RealtimeDB(G'sACADEMY初学者用サンプル)</title>
+    <link rel="stylesheet" href="styl.css">
+</head>
+
+<body>
+
+    <!-- コンテンツ表示画面 -->
+    <div>
+        <div >
+            名前：<input type="text" id ="uname">
+        </div>
+        <div>
+            <textarea id="text" cols="50" rows="10"></textarea>
+            <button id="send">送信</button>
+        </div>
+        <div id="output" style="overflow: auto;height: 300px;"></div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved }
+            from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDFLtKEVqqoN1fXAOzQdRAfsRQf7raG0tQ",
+            authDomain: "kadai03-c7902.firebaseapp.com",
+            projectId: "kadai03-c7902",
+            storageBucket: "kadai03-c7902.appspot.com",
+            messagingSenderId: "409456048116",
+            appId: "1:409456048116:web:6a06adc9d9af9354992ba1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app); //RealtimeDBに接続
+        const dbRef = ref(db, "chat"); //RealtimeDB内の"chat"を使う
+
+        //データ登録(Click)
+        $("#send").on('click', function () {
+            const name = $("#uname").val();
+            const text = $("#text").val();
+          
+        
+        //データ登録(Enter)
+       
+            const msg  = {
+                uname: $("#uname").val(),
+                text: $("#text").val()
+            }
+            const newPostRef = push(dbRef);
+            set(newPostRef, msg);
+
+        })
+
+   
+       //最初にデータ取得＆onSnapshotでリアルタイムにデータを取得
+      
+       onChildAdded(dbRef, function(data){
+        const msg = data.val();
+        const key = data.key;
+      
+        let h = "<p>";
+            h += msg.uname;
+            h += "<br>";
+            h += msg.text;
+            h += "</p>";
+
+            $("#output").append(h);
+        
+        $("#uname").val("")
+        $("#text").val("")
+
+    //     let h = `
+    //     <div>
+    //         <h1>${msg.umane}</h1>
+    //         <h1>${msg.text}</h1>
+    //     </div>
+    //     `
+    //   $("#output").append(h);
+    });
+    
+
+
+    </script>
+</body>
+
+</html>
